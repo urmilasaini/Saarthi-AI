@@ -1,0 +1,43 @@
+# secrets — never commit API keys
+.env
+code/.env
+
+# python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# runtime artifacts
+saarthi_cache.sqlite
+*.sqlite
+.cache.sqlite
+holiday_json/
+
+# old prototype scripts (replaced by app/)
+code/
+
+# internal planning / design (not part of the app)
+docs/
+mockups/
+problem.md
+IMPLEMENTATION.md
+
+# tests (not needed for deployment)
+tests/
+
+# scratch / temp files
+test.txt
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# node (in case npm creates local node_modules)
+node_modules/

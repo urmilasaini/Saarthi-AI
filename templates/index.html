@@ -1,0 +1,384 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- ======== Saarthi AI splash ======== -->
+<div id="splash" aria-hidden="true">
+  <div class="splash-blob b1"></div>
+  <div class="splash-blob b2"></div>
+
+  <svg id="splash-svg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMid slice">
+    <defs>
+      <linearGradient id="trail-grad" x1="0" y1="1" x2="1" y2="0">
+        <stop offset="0" stop-color="#FF6B86" stop-opacity="0.25"/>
+        <stop offset="0.5" stop-color="#DC143C"/>
+        <stop offset="1" stop-color="#7A0920"/>
+      </linearGradient>
+      <linearGradient id="plane-grad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#FF4D6D"/>
+        <stop offset="1" stop-color="#8E0B26"/>
+      </linearGradient>
+    </defs>
+
+    <!-- AI network: location nodes + route connections -->
+    <g class="net">
+      <path class="net-line" d="M 140 540 L 290 430 L 470 480"/>
+      <path class="net-line" d="M 720 160 L 830 250 L 770 390"/>
+      <path class="net-line" d="M 180 180 L 320 230"/>
+      <circle class="net-ring" cx="140" cy="540" r="11"/>
+      <circle class="net-node" cx="140" cy="540" r="5"/>
+      <circle class="net-node" cx="290" cy="430" r="4"/>
+      <circle class="net-node" cx="470" cy="480" r="5"/>
+      <circle class="net-ring" cx="830" cy="250" r="11"/>
+      <circle class="net-node" cx="720" cy="160" r="4"/>
+      <circle class="net-node" cx="830" cy="250" r="5"/>
+      <circle class="net-node" cx="770" cy="390" r="4"/>
+      <circle class="net-node" cx="180" cy="180" r="4"/>
+      <circle class="net-node" cx="320" cy="230" r="5"/>
+    </g>
+
+    <!-- flight path: rise -> wide loop -> tight loop -> dash to navbar -->
+    <path id="flight" fill="none" stroke="none"
+          d="M 500 780
+             C 505 670 512 600 520 540
+             A 150 150 0 1 1 520 240
+             A 150 150 0 1 1 520 540
+             A 80 80 0 1 1 520 380
+             A 80 80 0 1 1 520 540
+             C 480 500 260 260 60 60"/>
+    <path id="trail" d="M 500 780
+             C 505 670 512 600 520 540
+             A 150 150 0 1 1 520 240
+             A 150 150 0 1 1 520 540
+             A 80 80 0 1 1 520 380
+             A 80 80 0 1 1 520 540
+             C 480 500 260 260 60 60"/>
+
+    <!-- the glowing paper plane -->
+    <g id="plane" transform="translate(500 780)">
+      <circle r="16" fill="rgba(255,77,109,0.18)"/>
+      <path d="M -4 -10 L 22 0 L -4 10 L 3 0 Z" fill="url(#plane-grad)"/>
+      <path d="M -4 -10 L 3 0 L -4 10 Z" fill="#fff" opacity="0.35"/>
+    </g>
+  </svg>
+
+  <!-- center title on glass -->
+  <div class="splash-center">
+    <div class="splash-glass">
+      <h1 class="splash-title splash-title-clip">
+        <span class="st-word">Saarthi</span><span class="st-word st-ai">AI</span>
+      </h1>
+      <p class="splash-tag">know before you go</p>
+    </div>
+  </div>
+
+  <!-- plane lands here: the navbar logo -->
+  <div class="splash-logochip">
+    <span class="lm">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+      </svg>
+    </span>
+    <span class="lt">Saarthi</span>
+  </div>
+
+  <span class="splash-pulse"></span>
+  <span class="splash-pulse p2"></span>
+  <button class="splash-skip" type="button">Skip</button>
+</div>
+
+<div id="map"></div>
+
+<header class="topbar">
+  <div class="logo">
+    <span class="logo-mark"><i data-lucide="navigation"></i></span>
+    <span class="logo-text">Saarthi</span>
+  </div>
+  <button class="ask-pill" id="ask-open" aria-label="Open Ask Saarthi chat">
+    <i data-lucide="sparkles"></i> Ask Saarthi
+  </button>
+</header>
+
+<div class="route-pill hidden" id="route-pill">
+  <i data-lucide="route"></i><span id="route-pill-text" class="trunc"></span>
+</div>
+
+{% if not llm_available %}
+<div class="toast-warn" id="llm-toast">
+  <i data-lucide="triangle-alert"></i>
+  No LLM key configured — verdicts will be data-only. Add GEMINI_API_KEY or GROQ_API_KEY to .env
+</div>
+{% endif %}
+
+<aside class="panel" id="panel">
+  <div class="grab"></div>
+  <div class="panel-inner">
+
+    <form id="plan-form" autocomplete="off" onsubmit="return false;">
+
+      <!-- ======== STEP 1 : locations ======== -->
+      <section class="state show" id="state-loc">
+        <h2>Where are you headed?</h2>
+        <p class="sub">Saarthi predicts your lateness risk before you leave.</p>
+        <div class="steps"><span class="on"></span><span></span><span></span></div>
+
+        <div class="loc-group">
+          <div class="loc-row" id="row-from">
+            <div class="node"><span class="ring"></span></div>
+            <input class="loc-input" id="inp-from" placeholder="From — e.g. IIIT Lucknow"
+                   required aria-label="Starting location" role="combobox" aria-expanded="false">
+            <div class="suggest" id="suggest-from" role="listbox"></div>
+          </div>
+          <div class="loc-row" id="row-to">
+            <div class="node"><span class="pin-solid"></span></div>
+            <input class="loc-input" id="inp-to" placeholder="Where to?"
+                   required aria-label="Destination" role="combobox" aria-expanded="false">
+            <div class="suggest" id="suggest-to" role="listbox"></div>
+          </div>
+        </div>
+
+        <button class="btn-3d" id="btn-step1" type="button" disabled>
+          <i data-lucide="arrow-right"></i> Continue
+        </button>
+      </section>
+
+      <!-- ======== STEP 2 : vehicle ======== -->
+      <section class="state" id="state-vehicle">
+        <h2>How are you travelling?</h2>
+        <p class="sub trunc" id="route-sub"></p>
+        <div class="steps"><span class="on"></span><span class="on"></span><span></span></div>
+
+        <div class="v-hint"><i data-lucide="chevrons-left-right"></i> slide to choose</div>
+        <div class="v-carousel" id="v-carousel">
+
+          <div class="v-card" data-mode="motorcycle">
+            <svg class="v-illus" viewBox="0 0 64 64" aria-hidden="true">
+              <defs><linearGradient id="vg-bike" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#FF5C7C"/><stop offset="1" stop-color="#A60D2E"/>
+              </linearGradient></defs>
+              <circle cx="15" cy="47" r="9" fill="none" stroke="#16181D" stroke-width="3.5"/>
+              <circle cx="49" cy="47" r="9" fill="none" stroke="#16181D" stroke-width="3.5"/>
+              <path d="M15 47 L26 30 L38 30 L49 47" fill="none" stroke="url(#vg-bike)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M24 22 L30 30" stroke="#16181D" stroke-width="3.5" stroke-linecap="round"/>
+              <path d="M19 22 L28 22" stroke="#16181D" stroke-width="3.5" stroke-linecap="round"/>
+              <rect x="34" y="24" width="12" height="6" rx="3" fill="url(#vg-bike)"/>
+            </svg>
+            <div class="v-name">Bike</div><div class="v-eta">beats the jams</div>
+          </div>
+
+          <div class="v-card active" data-mode="car">
+            <svg class="v-illus" viewBox="0 0 64 64" aria-hidden="true">
+              <defs><linearGradient id="vg-car" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#FF5C7C"/><stop offset="1" stop-color="#A60D2E"/>
+              </linearGradient></defs>
+              <path d="M12 30 L18 17 Q19 15 21 15 L43 15 Q45 15 46 17 L52 30 Z" fill="url(#vg-car)"/>
+              <path d="M21 18 L43 18 L47 28 L17 28 Z" fill="#fff" opacity="0.9"/>
+              <rect x="6" y="29" width="52" height="18" rx="8" fill="url(#vg-car)"/>
+              <rect x="9" y="35" width="9" height="4.5" rx="2.2" fill="#FFD166"/>
+              <rect x="46" y="35" width="9" height="4.5" rx="2.2" fill="#FFD166"/>
+              <circle cx="18" cy="49" r="6.5" fill="#16181D"/><circle cx="18" cy="49" r="2.8" fill="#fff"/>
+              <circle cx="46" cy="49" r="6.5" fill="#16181D"/><circle cx="46" cy="49" r="2.8" fill="#fff"/>
+            </svg>
+            <div class="v-name">Car</div><div class="v-eta">comfortable</div>
+          </div>
+
+          <div class="v-card" data-mode="taxi">
+            <svg class="v-illus" viewBox="0 0 64 64" aria-hidden="true">
+              <defs><linearGradient id="vg-taxi" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#FF5C7C"/><stop offset="1" stop-color="#A60D2E"/>
+              </linearGradient></defs>
+              <rect x="26" y="8" width="12" height="7" rx="2.5" fill="#FFD166"/>
+              <path d="M12 32 L18 19 Q19 17 21 17 L43 17 Q45 17 46 19 L52 32 Z" fill="url(#vg-taxi)"/>
+              <path d="M21 20 L43 20 L47 30 L17 30 Z" fill="#fff" opacity="0.9"/>
+              <rect x="6" y="31" width="52" height="17" rx="8" fill="url(#vg-taxi)"/>
+              <rect x="24" y="35" width="16" height="8" rx="2" fill="#FFD166"/>
+              <circle cx="18" cy="50" r="6.5" fill="#16181D"/><circle cx="18" cy="50" r="2.8" fill="#fff"/>
+              <circle cx="46" cy="50" r="6.5" fill="#16181D"/><circle cx="46" cy="50" r="2.8" fill="#fff"/>
+            </svg>
+            <div class="v-name">Taxi</div><div class="v-eta">no parking worry</div>
+          </div>
+
+          <div class="v-card" data-mode="bus">
+            <svg class="v-illus" viewBox="0 0 64 64" aria-hidden="true">
+              <defs><linearGradient id="vg-bus" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#FF5C7C"/><stop offset="1" stop-color="#A60D2E"/>
+              </linearGradient></defs>
+              <rect x="8" y="12" width="48" height="36" rx="8" fill="url(#vg-bus)"/>
+              <rect x="13" y="18" width="10" height="11" rx="2.5" fill="#fff" opacity="0.9"/>
+              <rect x="27" y="18" width="10" height="11" rx="2.5" fill="#fff" opacity="0.9"/>
+              <rect x="41" y="18" width="10" height="11" rx="2.5" fill="#fff" opacity="0.9"/>
+              <rect x="13" y="36" width="38" height="4" rx="2" fill="#fff" opacity="0.5"/>
+              <circle cx="19" cy="50" r="6" fill="#16181D"/><circle cx="19" cy="50" r="2.5" fill="#fff"/>
+              <circle cx="45" cy="50" r="6" fill="#16181D"/><circle cx="45" cy="50" r="2.5" fill="#fff"/>
+            </svg>
+            <div class="v-name">Bus</div><div class="v-eta">budget friendly</div>
+          </div>
+
+        </div>
+
+        <button class="btn-3d" id="btn-step2" type="button">
+          <i data-lucide="arrow-right"></i> Continue
+        </button>
+        <button class="btn-ghost" type="button" data-back="state-loc">← Back</button>
+      </section>
+
+      <!-- ======== STEP 3 : time + analyze ======== -->
+      <section class="state" id="state-time">
+        <h2>When must you arrive?</h2>
+        <p class="sub">We'll simulate departures against live traffic.</p>
+        <div class="steps"><span class="on"></span><span class="on"></span><span class="on"></span></div>
+
+        <div class="chip-row" id="sum-chips"></div>
+
+        <div class="preset-row">
+          <button class="preset" type="button" data-preset="tomorrow930">Tomorrow 9:30</button>
+          <button class="preset" type="button" data-preset="plus2h">In 2 hours</button>
+          <button class="preset" type="button" data-preset="tonight7">Tonight 7 PM</button>
+        </div>
+
+        <div class="time-input">
+          <i data-lucide="alarm-clock"></i>
+          <input type="datetime-local" id="arrive-by" required aria-label="Arrival deadline">
+        </div>
+
+        <button class="btn-3d" id="btn-analyze" type="button">
+          <i data-lucide="radar"></i> <span class="btn-label">ANALYZE MY COMMUTE</span>
+        </button>
+        <button class="btn-ghost" type="button" data-back="state-vehicle">← Back</button>
+      </section>
+
+    </form>
+
+    <!-- ======== agent progress : the cooking console ======== -->
+    <section class="state" id="state-progress">
+      <div class="cook-head">
+        <div class="ai-orb"><span class="orb-ring"></span><i data-lucide="sparkles"></i></div>
+        <div>
+          <h2>Saarthi is cooking<span class="cook-dots"><i>.</i><i>.</i><i>.</i></span></h2>
+          <p class="cook-line" id="cook-line">Waking up the agents…</p>
+        </div>
+      </div>
+      <div class="cook-bar"><span id="cook-bar-fill"></span></div>
+      <div id="task-list">
+        <div class="task wait" data-task="geocode">
+          <div class="t-icon"><i data-lucide="map-pin"></i></div>
+          <div><div class="t-label">Locating places</div><div class="t-sub"></div></div>
+        </div>
+        <div class="task wait" data-task="traffic">
+          <div class="t-icon"><i data-lucide="car-front"></i></div>
+          <div><div class="t-label">Simulating departure times</div><div class="t-sub"></div></div>
+        </div>
+        <div class="task wait" data-task="weather">
+          <div class="t-icon"><i data-lucide="cloud-rain"></i></div>
+          <div><div class="t-label">Weather forecast</div><div class="t-sub"></div></div>
+        </div>
+        <div class="task wait" data-task="festivals">
+          <div class="t-icon"><i data-lucide="landmark"></i></div>
+          <div><div class="t-label">Festivals &amp; holidays</div><div class="t-sub"></div></div>
+        </div>
+        <div class="task wait" data-task="events">
+          <div class="t-icon"><i data-lucide="calendar"></i></div>
+          <div><div class="t-label">Public events</div><div class="t-sub"></div></div>
+        </div>
+        <div class="task wait" data-task="advisories">
+          <div class="t-icon"><i data-lucide="siren"></i></div>
+          <div><div class="t-label">Police advisories</div><div class="t-sub"></div></div>
+        </div>
+        <div class="task wait" data-task="verdict">
+          <div class="t-icon"><i data-lucide="sparkles"></i></div>
+          <div><div class="t-label">AI verdict</div><div class="t-sub"></div></div>
+        </div>
+      </div>
+      <div id="progress-error"></div>
+    </section>
+
+    <!-- ======== verdict ======== -->
+    <section class="state" id="state-verdict">
+      <div class="gauge-wrap">
+        <svg viewBox="0 0 200 115">
+          <defs>
+            <linearGradient id="grad-low" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#34D399"/><stop offset="100%" stop-color="#15803D"/>
+            </linearGradient>
+            <linearGradient id="grad-medium" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#FBBF24"/><stop offset="100%" stop-color="#C2410C"/>
+            </linearGradient>
+            <linearGradient id="grad-high" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#FF4D6D"/><stop offset="100%" stop-color="#7A0920"/>
+            </linearGradient>
+          </defs>
+          <path class="gauge-track" d="M 18 105 A 86 86 0 0 1 182 105" fill="none" stroke-width="15" stroke-linecap="round"/>
+          <path id="gauge-arc" d="M 18 105 A 86 86 0 0 1 182 105" fill="none" stroke-width="15"
+                stroke-linecap="round" stroke-dasharray="270" stroke-dashoffset="270"/>
+          <text x="100" y="86" text-anchor="middle" class="gauge-score" fill="#16181D" id="gauge-score">0</text>
+          <text x="100" y="105" text-anchor="middle" font-size="9" font-weight="700" fill="#6B7280">LATENESS RISK</text>
+        </svg>
+        <div><span class="gauge-level" id="gauge-level"></span></div>
+      </div>
+
+      <div class="leave-block">
+        <div>
+          <div class="lb-label">LEAVE BY</div>
+          <div class="lb-time" id="leave-time">--:--</div>
+          <div class="lb-eta" id="leave-eta"></div>
+        </div>
+        <div class="countdown hidden" id="countdown"><i data-lucide="timer"></i> <span id="countdown-text"></span></div>
+      </div>
+
+      <p class="verdict-summary" id="verdict-summary"></p>
+
+      <div class="sec-title"><i data-lucide="list-checks"></i> WHY</div>
+      <div id="factors"></div>
+
+      <div class="sec-title"><i data-lucide="bar-chart-3"></i> DEPARTURE vs ARRIVAL</div>
+      <div id="curve"></div>
+
+      <div class="sec-title"><i data-lucide="lightbulb"></i> TIPS</div>
+      <div id="tips"></div>
+
+      <div class="verdict-actions">
+        <button class="btn-3d btn-recheck" type="button" id="btn-recheck">
+          <i data-lucide="refresh-cw"></i> Re-check now
+        </button>
+        <button class="btn-3d btn-secondary" type="button" id="btn-restart">
+          <i data-lucide="rotate-ccw"></i> New plan
+        </button>
+      </div>
+      <div class="provider-note" id="provider-note"></div>
+    </section>
+
+  </div>
+</aside>
+
+<!-- ======== Ask Saarthi : chat ======== -->
+<div class="modal-overlay hidden" id="ask-modal">
+  <div class="modal-card chat-card">
+    <div class="modal-head">
+      <h3><span class="chat-avatar"><i data-lucide="sparkles"></i></span> Ask Saarthi</h3>
+      <button class="modal-close" id="ask-close" aria-label="Close chat"><i data-lucide="x"></i></button>
+    </div>
+
+    <div class="chat-log" id="chat-log">
+      <div class="chat-empty" id="chat-empty">
+        <div class="chat-empty-orb"><i data-lucide="sparkles"></i></div>
+        <p>I'm your Lucknow commute agent — I can check live traffic,<br>festivals, weather and more.</p>
+        <div class="chat-suggests">
+          <button class="suggest-chip" type="button">Any festival tomorrow near Hazratganj?</button>
+          <button class="suggest-chip" type="button">When should I leave for Charbagh to arrive by 9 AM?</button>
+          <button class="suggest-chip" type="button">Will rain affect my evening commute today?</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ask-row">
+      <input type="text" id="ask-input" placeholder="Ask about commuting in Lucknow…" aria-label="Chat message">
+      <button id="ask-btn" aria-label="Send message"><i data-lucide="arrow-up"></i></button>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/splash.js"></script>
+<script src="/static/js/map.js"></script>
+<script src="/static/js/app.js"></script>
+{% endblock %}
