@@ -1,7 +1,7 @@
 # secrets — never commit API keys
 .env
 code/.env
-
+checks/
 # python
 __pycache__/
 *.pyc
@@ -24,6 +24,7 @@ code/
 
 # internal planning / design (not part of the app)
 docs/
+devpost.md
 mockups/
 problem.md
 IMPLEMENTATION.md

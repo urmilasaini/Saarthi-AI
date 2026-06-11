@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Saarthi AI — Architecture</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    width: 1500px; height: 1000px; overflow: hidden;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    background: radial-gradient(1200px 700px at 18% -10%, #2a1030 0%, #160b22 45%, #0d0716 100%);
+    color: #F5F2F7; padding: 44px 56px;
+    display: flex; flex-direction: column;
+  }
+  .head { display: flex; align-items: baseline; gap: 18px; margin-bottom: 10px; }
+  .head h1 { font-size: 40px; letter-spacing: 0.5px; }
+  .head h1 .ai { background: linear-gradient(90deg, #FF4D6D, #FF8FA3); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .head .sub { font-size: 17px; color: #B9AECB; }
+  .flow { flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; }
+  .row { display: flex; align-items: stretch; justify-content: center; gap: 14px; }
+  .card {
+    background: rgba(255,255,255,0.055);
+    border: 1px solid rgba(255,255,255,0.13);
+    border-radius: 16px; padding: 16px 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    display: flex; flex-direction: column; justify-content: center; gap: 5px;
+  }
+  .card .tag { font-size: 11.5px; font-weight: 700; letter-spacing: 1.6px; color: #FF7E96; }
+  .card h2 { font-size: 19px; font-weight: 700; }
+  .card p { font-size: 13.5px; color: #C9BFDA; line-height: 1.45; }
+  .card.user   { border-color: rgba(255,209,102,0.45); } .card.user .tag { color: #FFD166; }
+  .card.crimson{ border-color: rgba(255,77,109,0.5); background: linear-gradient(160deg, rgba(255,77,109,0.16), rgba(122,9,32,0.10)); }
+  .card.blue   { border-color: rgba(102,157,246,0.5); background: linear-gradient(160deg, rgba(66,103,244,0.18), rgba(20,40,120,0.10)); }
+  .card.blue .tag { color: #8AB4F8; }
+  .card.green  { border-color: rgba(0,237,100,0.4); background: linear-gradient(160deg, rgba(0,200,99,0.14), rgba(0,80,45,0.10)); }
+  .card.green .tag { color: #4ADE80; }
+  .arrow { align-self: center; font-size: 30px; color: #FF4D6D; padding: 0 2px; }
+  .varrow { text-align: center; font-size: 28px; color: #FF4D6D; line-height: 1; }
+  .tools { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
+  .tool {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 13px; padding: 12px 14px;
+  }
+  .tool b { display: block; font-size: 14.5px; margin-bottom: 3px; }
+  .tool span { font-size: 12px; color: #BBAFCE; line-height: 1.35; display: block; }
+  .lane-label { font-size: 12px; font-weight: 700; letter-spacing: 2px; color: #9b8fb3; text-align: center; margin-bottom: 8px; }
+  .pill { display: inline-block; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.16); margin: 2px 3px 0 0; color: #E7E0F0; }
+  .foot { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; color: #9b8fb3; font-size: 13px; }
+  .foot .brand { color: #FF7E96; font-weight: 700; }
+</style>
+</head>
+<body>
+
+  <div class="head">
+    <h1>Saarthi <span class="ai">AI</span></h1>
+    <div class="sub">Proactive commute-planning agent for Lucknow — architecture</div>
+  </div>
+
+  <div class="flow">
+
+    <div class="row">
+      <div class="card user" style="width:240px">
+        <div class="tag">USER</div>
+        <h2>Commute request</h2>
+        <p>Origin, destination, arrival deadline, travel mode</p>
+      </div>
+      <div class="arrow">&#10140;</div>
+      <div class="card crimson" style="width:280px">
+        <div class="tag">BACKEND</div>
+        <h2>FastAPI + SSE stream</h2>
+        <p>Python 3.11 · every agent tool step streams live to the browser</p>
+      </div>
+      <div class="arrow">&#10140;</div>
+      <div class="card" style="width:560px">
+        <div class="tag">PARALLEL SIGNAL FUSION</div>
+        <p style="margin-top:2px">
+          <span class="pill">TomTom departAt traffic sweep</span>
+          <span class="pill">TomTom + Geoapify geocoding</span>
+          <span class="pill">Open-Meteo weather</span>
+          <span class="pill">Calendarific + curated Lucknow festivals</span>
+          <span class="pill">Ticketmaster events</span>
+          <span class="pill">Police advisory search</span>
+        </p>
+      </div>
+    </div>
+
+    <div class="varrow">&#11015;</div>
+
+    <div class="row">
+      <div class="card crimson" style="width:430px">
+        <div class="tag">RISK ENGINE</div>
+        <h2>Deterministic risk score · 0–100</h2>
+        <p>Auditable formula over traffic delay, rain, festivals, events &amp; advisories — computed before any LLM sees it</p>
+      </div>
+      <div class="arrow">&#10140;</div>
+      <div class="card blue" style="width:430px">
+        <div class="tag">GOOGLE ADK + GEMINI</div>
+        <h2>LLM verdict synthesis</h2>
+        <p>LlmAgent + InMemoryRunner · Gemini model chain with Groq fallback narrates the leave-by verdict</p>
+      </div>
+      <div class="arrow">&#10140;</div>
+      <div class="card green" style="width:430px">
+        <div class="tag">MONGODB ATLAS · AGENT MEMORY</div>
+        <h2>commute_history + api_cache</h2>
+        <p>Every plan persisted; TTL collection auto-expires cached API responses</p>
+      </div>
+    </div>
+
+    <div class="varrow">&#11015;</div>
+
+    <div class="row">
+      <div class="card" style="width:500px">
+        <div class="tag">ASK SAARTHI · CHAT AGENT</div>
+        <h2>Memory-driven follow-ups</h2>
+        <p>"Which day is worst for my Charbagh commute?" — answered from real stored history, not invented memory</p>
+      </div>
+      <div class="arrow" style="font-size:24px">&#11020;</div>
+      <div class="card green" style="width:500px">
+        <div class="tag">MONGODB MCP SERVER</div>
+        <h2>Tool access to memory</h2>
+        <p style="margin-top:2px">
+          <span class="pill">find</span>
+          <span class="pill">aggregate</span>
+          <span class="pill">list-collections</span>
+          <span class="pill">read-only</span>
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="foot">
+    <div><span class="brand">Saarthi</span> — know before you go</div>
+    <div>Google Cloud Rapid Agent Hackathon · MongoDB Partner Track · 121 tests passing</div>
+  </div>
+
+</body>
+</html>
