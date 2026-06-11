@@ -12,16 +12,31 @@ pinned: false
 
 # Saarthi AI
 
-### A proactive commute-planning agent for Lucknow, India
+## Stop Guessing When to Leave.
+
+### Saarthi AI is a proactive commute-planning agent for Lucknow, India.
 
 **Saarthi does not just answer traffic questions. It plans when you should leave, explains why, remembers what happened before, and uses MongoDB MCP to reason over your commute history.**
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Hugging%20Face-yellow)](https://parthmax-saarthi-ai.hf.space)
+[![Built for Google Cloud Rapid Agent Hackathon](https://img.shields.io/badge/Google%20Cloud-Rapid%20Agent%20Hackathon-blue?logo=googlecloud)](#built-for-the-google-cloud-rapid-agent-hackathon)
+[![MongoDB Partner Track](https://img.shields.io/badge/MongoDB-Partner%20Track-green?logo=mongodb)](#mongodb-partner-track-integration)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Try%20Saarthi%20AI-yellow)](https://urmilasaini-saarthiai.hf.space/)
 [![GitHub](https://img.shields.io/badge/GitHub-parthmax2%2Fsaarthi--ai-black?logo=github)](https://github.com/parthmax2/saarthi-ai)
-[![Track](https://img.shields.io/badge/Partner%20Track-MongoDB-green?logo=mongodb)](https://www.mongodb.com)
 [![Tests](https://img.shields.io/badge/tests-121%20passing-brightgreen)](#quality-proof)
 
-Built for the Google Cloud Rapid Agent Hackathon, MongoDB Partner Track.
+## Built for the Google Cloud Rapid Agent Hackathon
+
+### MongoDB Partner Track
+
+### Why judges should stop here
+
+| What Saarthi does | Why it matters |
+|---|---|
+| Simulates future departure windows | It predicts when leaving late becomes risky, not just traffic right now |
+| Uses MongoDB as agent memory | Commute history becomes queryable context for future answers |
+| Connects to MongoDB MCP | The agent can inspect real stored commute data with MCP tools |
+| Blends traffic, weather, events, festivals, and advisories | It understands local Lucknow commute risk beyond maps |
+| Streams visible tool progress | Judges can see the agent working instead of trusting hidden magic |
 
 </div>
 
@@ -394,18 +409,22 @@ saarthi-ai/
 
 Built for the Google Cloud Rapid Agent Hackathon, MongoDB Partner Track.
 
+Full author attribution is also preserved in [AUTHORS.md](AUTHORS.md) and [NOTICE](NOTICE).
+
 | Name | GitHub | Contributions |
 |---|---|---|
-| Saksham Pathak | [@parthmax2](https://github.com/parthmax2) | Team lead, backend architecture, FastAPI orchestration, Google ADK agent flow, MongoDB Atlas integration, deployment readiness |
-| Aishrica Dhiman | [@aishricadhiman](https://github.com/aishricadhiman) | Frontend experience, chat UI, map-focused interaction design, visual polish, demo flow and usability testing |
-| Sameer Singh | [@sameerfcb](https://github.com/sameerfcb) | Tool integrations, traffic/weather/event API wiring, MongoDB MCP setup, Docker/runtime support, smoke-test workflow |
-| Urmila Saini | [@urmilasaini](https://github.com/urmilasaini) | Local research, Lucknow event intelligence, test coverage, data validation, demo scenario preparation |
+| Saksham Pathak | [@parthmax2](https://github.com/parthmax2) | Team lead, UI/UX direction, frontend experience, chat UI, map-focused interaction design, visual polish, deployment readiness |
+| Aishrica Dhiman | [@aishricadhiman](https://github.com/aishricadhiman) | Data analyst work, commute-pattern analysis, local data validation, agentic user-flow support, Ask Saarthi interaction logic, demo flow and usability testing |
+| Sameer Singh | [@sameerfcb](https://github.com/sameerfcb) | Agentic tool orchestration, traffic/weather/event API wiring, MongoDB MCP setup, agent memory integration, Docker/runtime support, smoke-test workflow |
+| Urmila Saini | [@urmilasaini](https://github.com/urmilasaini) | Agent knowledge grounding, Lucknow event intelligence, local commute-risk research, agent response validation, test coverage, demo scenario preparation |
 
 ---
 
 ## License
 
 MIT License. See [LICENSE](LICENSE).
+
+Please preserve the author attribution in [AUTHORS.md](AUTHORS.md) and [NOTICE](NOTICE) when forking, demoing, writing about, or redistributing this project.
 
 ---
 

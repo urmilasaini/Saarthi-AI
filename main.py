@@ -31,7 +31,79 @@ logger = logging.getLogger("saarthi.api")
 BASE_DIR = Path(__file__).resolve().parent
 TZ = ZoneInfo(config.TIMEZONE)
 
-app = FastAPI(title="Saarthi AI", description="Proactive commute planning for Lucknow")
+PROJECT_CREDITS = {
+    "project": "Saarthi AI",
+    "event": "Google Cloud Rapid Agent Hackathon",
+    "track": "MongoDB Partner Track",
+    "copyright": "Copyright (c) 2026 Saksham Pathak, Urmila Saini, Aishrica Dhiman, Sameer Singh",
+    "authors": [
+        {
+            "name": "Saksham Pathak",
+            "github": "parthmax2",
+            "contributions": [
+                "Team lead",
+                "UI/UX direction",
+                "Frontend experience",
+                "Chat UI",
+                "Map-focused interaction design",
+                "Visual polish",
+                "Deployment readiness",
+            ],
+        },
+        {
+            "name": "Aishrica Dhiman",
+            "github": "aishricadhiman",
+            "contributions": [
+                "Data analyst work",
+                "Commute-pattern analysis",
+                "Local data validation",
+                "Agentic user-flow support",
+                "Ask Saarthi interaction logic",
+                "Demo flow and usability testing",
+            ],
+        },
+        {
+            "name": "Sameer Singh",
+            "github": "sameerfcb",
+            "contributions": [
+                "Agentic tool orchestration",
+                "Traffic/weather/event API wiring",
+                "MongoDB MCP setup",
+                "Agent memory integration",
+                "Docker/runtime support",
+                "Smoke-test workflow",
+            ],
+        },
+        {
+            "name": "Urmila Saini",
+            "github": "urmilasaini",
+            "contributions": [
+                "Agent knowledge grounding",
+                "Lucknow event intelligence",
+                "Local commute-risk research",
+                "Agent response validation",
+                "Test coverage",
+                "Demo scenario preparation",
+            ],
+        },
+    ],
+    "attribution": "Please preserve author attribution in forks, demos, writeups, and redistributed versions.",
+}
+
+app = FastAPI(
+    title="Saarthi AI",
+    summary="Proactive commute-planning agent for Lucknow.",
+    description=(
+        "Saarthi AI plans when to leave, explains why, remembers commute history, "
+        "and uses MongoDB MCP to reason over stored commute data. Created by "
+        "Saksham Pathak, Aishrica Dhiman, Sameer Singh, and Urmila Saini."
+    ),
+    contact={
+        "name": "Saarthi AI Team",
+        "url": "https://github.com/parthmax2/saarthi-ai",
+    },
+    license_info={"name": "MIT", "url": "https://opensource.org/license/mit"},
+)
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 
@@ -50,8 +122,15 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 @app.get("/")
 def index(request: Request):
     return templates.TemplateResponse(
-        request, "index.html", {"llm_available": llm.available()}
+        request,
+        "index.html",
+        {"llm_available": llm.available(), "credits": PROJECT_CREDITS},
     )
+
+
+@app.get("/credits")
+def credits():
+    return PROJECT_CREDITS
 
 
 @app.get("/api/autocomplete")

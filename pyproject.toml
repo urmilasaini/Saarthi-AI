@@ -1,0 +1,19 @@
+[project]
+name = "saarthi-ai"
+version = "1.0.0"
+description = "Proactive commute-planning agent for Lucknow, built for the Google Cloud Rapid Agent Hackathon MongoDB Partner Track."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [
+  { name = "Saksham Pathak" },
+  { name = "Aishrica Dhiman" },
+  { name = "Sameer Singh" },
+  { name = "Urmila Saini" }
+]
+keywords = ["agentic-ai", "commute-planning", "mongodb", "mcp", "google-cloud-hackathon", "lucknow"]
+
+[project.urls]
+Homepage = "https://urmilasaini-saarthiai.hf.space/"
+Repository = "https://github.com/parthmax2/saarthi-ai"
+Credits = "https://github.com/parthmax2/saarthi-ai/blob/main/AUTHORS.md"
