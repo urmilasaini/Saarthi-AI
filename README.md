@@ -6,6 +6,8 @@ colorTo: green
 sdk: docker
 app_port: 7860
 license: mit
+authors: "[AUTHORS.md](AUTHORS.md)"
+notice: "[NOTICE](NOTICE)"
 pinned: false
 ---
 
