@@ -23,7 +23,11 @@ pinned: false
 [![MongoDB Partner Track](https://img.shields.io/badge/MongoDB-Partner%20Track-green?logo=mongodb)](#mongodb-partner-track-integration)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Try%20Saarthi%20AI-yellow)](https://urmilasaini-saarthiai.hf.space/)
 [![GitHub](https://img.shields.io/badge/GitHub-parthmax2%2Fsaarthi--ai-black?logo=github)](https://github.com/parthmax2/saarthi-ai)
+[![Authors](https://img.shields.io/badge/Authors-Team%20Attribution-blueviolet)](AUTHORS.md)
+[![Notice](https://img.shields.io/badge/Notice-Project%20Notice-lightgrey)](NOTICE)
 [![Tests](https://img.shields.io/badge/tests-121%20passing-brightgreen)](#quality-proof)
+
+**Project files:** [Authors](AUTHORS.md) | [Notice](NOTICE) | [MIT License](LICENSE)
 
 ## Built for the Google Cloud Rapid Agent Hackathon
 
