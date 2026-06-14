@@ -6,7 +6,7 @@
 # Saarthi AI
 
 ## Stop Guessing When to Leave.
-
+![Saarthi AI README banner](static/images/readme-banner.png)
 ### Saarthi AI is a proactive commute-planning agent for Lucknow, India.
 
 **Saarthi does not just answer traffic questions. It plans when you should leave, explains why, remembers what happened before, and uses MongoDB MCP to reason over your commute history.**
@@ -33,7 +33,7 @@
 
 </div>
 
-![Saarthi AI README banner](static/images/readme-banner.png)
+
 
 ---
 
